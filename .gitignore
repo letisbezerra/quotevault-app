@@ -1,0 +1,31 @@
+# === Xcode ===
+.DS_Store
+xcuserdata/
+*.xcuserstate
+DerivedData/
+.build/
+
+# === Swift Package Manager ===
+.swiftpm/
+Package.resolved
+
+# === Xcode Playgrounds ===
+timeline.xctimeline
+playground.xcworkspace
+
+# === iOS ===
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# === Environment / Secrets ===
+.env
+.env.*
+Secrets.plist
+
+# === Logs ===
+*.log
+
+# === Node (caso use depois) ===
+node_modules/
+
