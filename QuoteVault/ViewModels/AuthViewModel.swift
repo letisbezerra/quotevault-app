@@ -24,7 +24,7 @@ class AuthViewModel: ObservableObject {
 
     func signIn() async {
         guard !email.isEmpty, !password.isEmpty else {
-            errorMessage = "Preencha email e senha."
+            errorMessage = "Please enter email and password"
             return
         }
 
@@ -46,10 +46,10 @@ class AuthViewModel: ObservableObject {
 
         isLoading = false
     }
-
-    func signUp() async {
+    
+    func signUp(email: String, password: String) async {
         guard !email.isEmpty, !password.isEmpty else {
-            errorMessage = "Preencha email e senha."
+            errorMessage = "Please enter email and password."
             return
         }
 
@@ -62,15 +62,48 @@ class AuthViewModel: ObservableObject {
                 password: password
             )
 
-            self.session = response.session
-            self.isAuthenticated = response.session != nil
+            // Se a sessão existir, autentica
+            if let session = response.session {
+                self.session = session
+                self.isAuthenticated = true
+            } else if response.user != nil {
+                // Usuário criado, mas sem sessão
+                self.isAuthenticated = true
+            }
 
         } catch {
             self.errorMessage = error.localizedDescription
+            self.isAuthenticated = false
         }
 
         isLoading = false
     }
+    
+//    func signUp(email: String, password: String) async {
+//        guard !email.isEmpty, !password.isEmpty else {
+//            errorMessage = "Please enter email and password"
+//            return
+//        }
+//
+//        isLoading = true
+//        errorMessage = nil
+//
+//        do {
+//            let response = try await SupabaseService.client.auth.signUp(
+//                email: email,
+//                password: password
+//            )
+//
+//            self.session = response.session
+//            self.isAuthenticated = response.session != nil
+//
+//        } catch {
+//            self.errorMessage = error.localizedDescription
+//            self.isAuthenticated = false
+//        }
+//
+//        isLoading = false
+//    }
 
     func signOut() async {
         do {
@@ -84,7 +117,7 @@ class AuthViewModel: ObservableObject {
 
     func resetPassword() async {
         guard !email.isEmpty else {
-            errorMessage = "Informe seu email."
+            errorMessage = "Please enter your email"
             return
         }
 
