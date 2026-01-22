@@ -22,7 +22,7 @@ struct LoginView: View {
             VStack(spacing: 24) {
                 Spacer()
                 
-                Text("QuoteVault")
+                Text("Quote Vault")
                     .font(.largeTitle.bold())
                 
                 Text("Welcome back")

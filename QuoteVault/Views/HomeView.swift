@@ -13,6 +13,34 @@ struct HomeView: View {
     var body: some View {
         NavigationStack {
             VStack {
+                // Busca
+                TextField("Search by text or author", text: $viewModel.searchText)
+                    .textFieldStyle(.roundedBorder)
+                    .padding(.horizontal)
+                
+                // Filtros por categoria
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack {
+                        Button("All") { viewModel.selectedCategory = nil }
+                            .padding(8)
+                            .background(viewModel.selectedCategory == nil ? Color.blue : Color.gray.opacity(0.2))
+                            .foregroundColor(viewModel.selectedCategory == nil ? .white : .primary)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                        
+                        ForEach(viewModel.categories, id: \.self) { category in
+                            Button(category) { viewModel.selectedCategory = category }
+                                .padding(8)
+                                .background(viewModel.selectedCategory == category ? Color.blue : Color.gray.opacity(0.2))
+                                .foregroundColor(viewModel.selectedCategory == category ? .white : .primary)
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                        }
+                    }
+                    .padding(.horizontal)
+                }
+                
+                Divider()
+                
+                // Conteúdo
                 if viewModel.isLoading {
                     ProgressView("Loading Quotes...")
                         .padding()
@@ -20,12 +48,12 @@ struct HomeView: View {
                     Text(error)
                         .foregroundColor(.red)
                         .padding()
-                } else if viewModel.quotes.isEmpty {
+                } else if viewModel.filteredQuotes.isEmpty {
                     Text("No quotes found.")
                         .foregroundColor(.secondary)
                         .padding()
                 } else {
-                    List(viewModel.quotes) { quote in
+                    List(viewModel.filteredQuotes) { quote in
                         VStack(alignment: .leading, spacing: 8) {
                             Text("“\(quote.text)”")
                                 .font(.body)
