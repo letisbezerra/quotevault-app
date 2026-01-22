@@ -78,32 +78,6 @@ class AuthViewModel: ObservableObject {
 
         isLoading = false
     }
-    
-//    func signUp(email: String, password: String) async {
-//        guard !email.isEmpty, !password.isEmpty else {
-//            errorMessage = "Please enter email and password"
-//            return
-//        }
-//
-//        isLoading = true
-//        errorMessage = nil
-//
-//        do {
-//            let response = try await SupabaseService.client.auth.signUp(
-//                email: email,
-//                password: password
-//            )
-//
-//            self.session = response.session
-//            self.isAuthenticated = response.session != nil
-//
-//        } catch {
-//            self.errorMessage = error.localizedDescription
-//            self.isAuthenticated = false
-//        }
-//
-//        isLoading = false
-//    }
 
     func signOut() async {
         do {
@@ -123,6 +97,7 @@ class AuthViewModel: ObservableObject {
 
         do {
             try await SupabaseService.client.auth.resetPasswordForEmail(email)
+            errorMessage = nil
         } catch {
             self.errorMessage = error.localizedDescription
         }

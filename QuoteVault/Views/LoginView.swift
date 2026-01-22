@@ -99,7 +99,7 @@ struct LoginView: View {
                     viewModel.password = "" // limpa a senha
                 }
             case .resetPassword:
-                ResetPasswordView()
+                ResetPasswordView(viewModel: viewModel)
             }
         }
     }
