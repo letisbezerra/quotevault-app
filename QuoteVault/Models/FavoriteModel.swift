@@ -1,5 +1,5 @@
 //
-//  QuoteModel.swift
+//  FavoriteModel.swift
 //  QuoteVault
 //
 //  Created by Leticia Bezerra on 22/01/26.
@@ -7,16 +7,16 @@
 
 import Foundation
 
-struct QuoteModel: Codable, Identifiable {
+struct FavoriteModel: Codable, Identifiable {
     let id: UUID
-    let text: String
-    let author: String?
-    let category: String
+    let userId: UUID
+    let quoteId: UUID
     let createdAt: Date?
-    var isFavorite: Bool = false 
     
     enum CodingKeys: String, CodingKey {
-        case id, text, author, category
+        case id
+        case userId = "user_id"
+        case quoteId = "quote_id"
         case createdAt = "created_at"
     }
 }

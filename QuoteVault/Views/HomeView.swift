@@ -13,14 +13,14 @@ struct HomeView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                // Busca
+                // Barra de busca
                 TextField("Search by text or author", text: $viewModel.searchText)
                     .textFieldStyle(.roundedBorder)
                     .padding(.horizontal)
                 
                 // Filtros por categoria
                 ScrollView(.horizontal, showsIndicators: false) {
-                    HStack {
+                    HStack(spacing: 8) {
                         Button("All") { viewModel.selectedCategory = nil }
                             .padding(8)
                             .background(viewModel.selectedCategory == nil ? Color.blue : Color.gray.opacity(0.2))
@@ -53,24 +53,38 @@ struct HomeView: View {
                         .foregroundColor(.secondary)
                         .padding()
                 } else {
-                    List(viewModel.filteredQuotes) { quote in
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("“\(quote.text)”")
-                                .font(.body)
-                            HStack {
-                                Text(quote.author ?? "Unknown")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
+                    // Lista de quotes
+                    List {
+                        ForEach(viewModel.filteredQuotes, id: \.id) { quote in
+                            HStack(alignment: .top) {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text("“\(quote.text)”")
+                                        .font(.body)
+                                    HStack {
+                                        Text(quote.author ?? "Unknown")
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
+                                        Spacer()
+                                        Text(quote.category)
+                                            .font(.caption2)
+                                            .foregroundColor(.blue)
+                                            .padding(4)
+                                            .background(.gray.opacity(0.2))
+                                            .clipShape(RoundedRectangle(cornerRadius: 4))
+                                    }
+                                }
+                                
                                 Spacer()
-                                Text(quote.category)
-                                    .font(.caption2)
-                                    .foregroundColor(.blue)
-                                    .padding(4)
-                                    .background(.gray.opacity(0.2))
-                                    .clipShape(RoundedRectangle(cornerRadius: 4))
+                                
+                                Button {
+                                    viewModel.toggleFavorite(quote: quote)
+                                } label: {
+                                    Image(systemName: viewModel.isFavorite(quote: quote) ? "heart.fill" : "heart")
+                                        .foregroundColor(viewModel.isFavorite(quote: quote) ? .red : .gray)
+                                }
                             }
+                            .padding(.vertical, 8)
                         }
-                        .padding(.vertical, 4)
                     }
                     .listStyle(.plain)
                     .refreshable {
@@ -89,4 +103,3 @@ struct HomeView: View {
 #Preview {
     HomeView()
 }
-

@@ -57,5 +57,31 @@ class QuoteViewModel: ObservableObject {
             return matchesCategory && matchesSearch
         }
     }
+    
+    func toggleFavorite(quote: QuoteModel) {
+        if let index = quotes.firstIndex(where: { $0.id == quote.id }) {
+            quotes[index].isFavorite.toggle()
+            applyFilters()
+            Task { await saveFavoriteToSupabase(quote: quotes[index]) }
+        }
+    }
+
+    func isFavorite(quote: QuoteModel) -> Bool {
+        return quotes.first(where: { $0.id == quote.id })?.isFavorite ?? false
+    }
+
+    func saveFavoriteToSupabase(quote: QuoteModel) async {
+        do {
+            let _ = try await SupabaseService.client
+                .from("quotes")
+                .update(["is_favorite": quote.isFavorite])
+                .eq("id", value: quote.id.uuidString)
+                .execute()
+        } catch {
+            print("Erro ao salvar favorito: \(error.localizedDescription)")
+        }
+    }
+
 }
+
 
