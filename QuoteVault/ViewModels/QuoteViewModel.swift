@@ -58,3 +58,4 @@ class QuoteViewModel: ObservableObject {
         }
     }
 }
+
