@@ -8,10 +8,10 @@
 import SwiftUI
 
 extension View {
+    /// Generates a UIImage snapshot of the SwiftUI View
     func snapshot() -> UIImage {
         let controller = UIHostingController(rootView: self)
         let view = controller.view
-
         let targetSize = controller.view.intrinsicContentSize
         view?.bounds = CGRect(origin: .zero, size: targetSize)
         view?.backgroundColor = .clear

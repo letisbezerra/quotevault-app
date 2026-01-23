@@ -11,19 +11,14 @@ import Combine
 
 @MainActor
 class AuthViewModel: ObservableObject {
-
-    // Inputs da View
-    @Published var email: String = ""
-    @Published var password: String = ""
-
-    // Estados da tela
+    @Published var email = ""
+    @Published var password = ""
     @Published var session: Session?
     @Published var isAuthenticated = false
     @Published var isLoading = false
     @Published var errorMessage: String?
 
     init() {
-        // Tenta carregar a sessão do Keychain ao iniciar
         if let savedSession = KeychainHelper.shared.loadSession() {
             self.session = savedSession
             self.isAuthenticated = true
@@ -40,24 +35,17 @@ class AuthViewModel: ObservableObject {
         errorMessage = nil
 
         do {
-            let session = try await SupabaseService.client.auth.signIn(
-                email: email,
-                password: password
-            )
-
+            let session = try await SupabaseService.client.auth.signIn(email: email, password: password)
             self.session = session
             self.isAuthenticated = true
-
-            // Salva a sessão no Keychain
             KeychainHelper.shared.save(session: session)
-
         } catch {
             self.errorMessage = error.localizedDescription
         }
 
         isLoading = false
     }
-    
+
     func signUp(email: String, password: String) async {
         guard !email.isEmpty, !password.isEmpty else {
             errorMessage = "Please enter email and password."
@@ -68,21 +56,14 @@ class AuthViewModel: ObservableObject {
         errorMessage = nil
 
         do {
-            let response = try await SupabaseService.client.auth.signUp(
-                email: email,
-                password: password
-            )
-
-            // Se a sessão existir, autentica e salva
+            let response = try await SupabaseService.client.auth.signUp(email: email, password: password)
             if let session = response.session {
                 self.session = session
                 self.isAuthenticated = true
                 KeychainHelper.shared.save(session: session)
             } else if response.user != nil {
-                // Usuário criado, mas sem sessão
                 self.isAuthenticated = true
             }
-
         } catch {
             self.errorMessage = error.localizedDescription
             self.isAuthenticated = false
@@ -96,10 +77,7 @@ class AuthViewModel: ObservableObject {
             try await SupabaseService.client.auth.signOut()
             self.session = nil
             self.isAuthenticated = false
-
-            // Limpa a sessão do Keychain
             KeychainHelper.shared.clearSession()
-
         } catch {
             self.errorMessage = error.localizedDescription
         }

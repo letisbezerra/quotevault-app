@@ -12,17 +12,14 @@ struct QuoteOfTheDayView: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            // Data de hoje
             Text(todayString())
                 .font(.subheadline)
                 .foregroundColor(.secondary)
 
-            // Título
             Text("Quote of the Day")
                 .font(.title2)
                 .bold()
 
-            // Card da quote
             QuoteCardView(quote: quote, style: .colorful)
                 .shadow(radius: 5)
                 .padding()
@@ -30,9 +27,13 @@ struct QuoteOfTheDayView: View {
         .padding()
     }
 
-    func todayString() -> String {
+    private func todayString() -> String {
         let formatter = DateFormatter()
-        formatter.dateStyle = .long // ex: January 22, 2026
+        formatter.dateStyle = .long
         return formatter.string(from: Date())
     }
+}
+
+#Preview {
+    QuoteOfTheDayView(quote: .sampleQuote())
 }

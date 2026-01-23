@@ -39,16 +39,6 @@
 			path = QuoteVault;
 			sourceTree = "<group>";
 		};
-		5554E3062F2157B00066E7C9 /* QuoteVaultTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = QuoteVaultTests;
-			sourceTree = "<group>";
-		};
-		5554E3102F2157B00066E7C9 /* QuoteVaultUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = QuoteVaultUITests;
-			sourceTree = "<group>";
-		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,8 +71,6 @@
 			isa = PBXGroup;
 			children = (
 				5554E2F82F2157AF0066E7C9 /* QuoteVault */,
-				5554E3062F2157B00066E7C9 /* QuoteVaultTests */,
-				5554E3102F2157B00066E7C9 /* QuoteVaultUITests */,
 				5554E2F72F2157AF0066E7C9 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -136,9 +124,6 @@
 			dependencies = (
 				5554E3052F2157B00066E7C9 /* PBXTargetDependency */,
 			);
-			fileSystemSynchronizedGroups = (
-				5554E3062F2157B00066E7C9 /* QuoteVaultTests */,
-			);
 			name = QuoteVaultTests;
 			packageProductDependencies = (
 			);
@@ -158,9 +143,6 @@
 			);
 			dependencies = (
 				5554E30F2F2157B00066E7C9 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				5554E3102F2157B00066E7C9 /* QuoteVaultUITests */,
 			);
 			name = QuoteVaultUITests;
 			packageProductDependencies = (

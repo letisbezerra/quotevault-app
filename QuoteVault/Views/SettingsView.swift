@@ -16,53 +16,35 @@ struct SettingsView: View {
         NavigationStack {
             Form {
                 Section(header: Text("Appearance")) {
-                    Toggle(isOn: $settingsVM.isDarkMode) {
-                        Text("Dark Mode")
-                    }
+                    Toggle(isOn: $settingsVM.isDarkMode) { Text("Dark Mode") }
                 }
 
                 Section(header: Text("Font")) {
                     HStack(spacing: 12) {
-                        Text("Font Size")
-                            .frame(width: 80, alignment: .leading)
-                        
-                        Button(action: {
-                            settingsVM.decreaseFontSize()
-                        }) {
-                            Image(systemName: "minus.circle.fill")
-                                .font(.title2)
-                                .foregroundColor(.red)
-                                .frame(width: 44, height: 44)
-                        }
-                        .buttonStyle(PlainButtonStyle())  // ✅ FIX PRINCIPAL
-                        
+                        Text("Font Size").frame(width: 80, alignment: .leading)
+
+                        Button { settingsVM.decreaseFontSize() } label: {
+                            Image(systemName: "minus.circle.fill").font(.title2).foregroundColor(.red).frame(width: 44, height: 44)
+                        }.buttonStyle(PlainButtonStyle())
+
                         Text("\(Int(settingsVM.fontSize)) pt")
                             .frame(width: 60)
                             .monospaced()
                             .font(.title3)
                             .fontWeight(.medium)
-                        
-                        Button(action: {
-                            settingsVM.increaseFontSize()
-                        }) {
-                            Image(systemName: "plus.circle.fill")
-                                .font(.title2)
-                                .foregroundColor(.blue)
-                                .frame(width: 44, height: 44)
-                        }
-                        .buttonStyle(PlainButtonStyle())  // ✅ FIX PRINCIPAL
+
+                        Button { settingsVM.increaseFontSize() } label: {
+                            Image(systemName: "plus.circle.fill").font(.title2).foregroundColor(.blue).frame(width: 44, height: 44)
+                        }.buttonStyle(PlainButtonStyle())
                     }
-                    .contentShape(Rectangle())  // ✅ GARANTE toque
+                    .contentShape(Rectangle())
                 }
 
-
                 Section {
-                    Button(action: {
-                        withAnimation(.easeInOut(duration: 0.2)) {
-                            isPressed = true
-                        }
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.2)) { isPressed = true }
                         dismiss()
-                    }) {
+                    } label: {
                         Text("Save Changes")
                             .foregroundColor(.white)
                             .bold()
@@ -76,20 +58,13 @@ struct SettingsView: View {
                 }
             }
             .toolbar {
-                ToolbarItem(placement: .principal) {
-                    Text("Settings")
-                        .font(.largeTitle)
-                        .bold()
-                }
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") { dismiss() }
-                }
+                ToolbarItem(placement: .principal) { Text("Settings").font(.largeTitle).bold() }
+                ToolbarItem(placement: .navigationBarLeading) { Button("Cancel") { dismiss() } }
             }
         }
     }
 }
 
 #Preview {
-    SettingsView()
-        .environmentObject(SettingsViewModel())
+    SettingsView().environmentObject(SettingsViewModel())
 }

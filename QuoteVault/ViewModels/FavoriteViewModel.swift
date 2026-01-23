@@ -14,7 +14,7 @@ class FavoriteViewModel: ObservableObject {
     @Published var favorites: [FavoriteModel] = []
     @Published var isLoading = false
     @Published var errorMessage: String?
-    
+
     func fetchFavorites(for userId: UUID) async {
         isLoading = true
         errorMessage = nil
@@ -28,27 +28,23 @@ class FavoriteViewModel: ObservableObject {
             let decoder = JSONDecoder()
             decoder.dateDecodingStrategy = .iso8601
             favorites = try decoder.decode([FavoriteModel].self, from: response.data)
-            
         } catch {
             errorMessage = error.localizedDescription
         }
         isLoading = false
     }
-    
+
     func toggleFavorite(quote: QuoteModel, userId: UUID) async {
         do {
             if isFavorite(quoteId: quote.id) {
-                // Remover favorito
                 try await SupabaseService.client
                     .from("favorites")
                     .delete()
                     .eq("quote_id", value: quote.id.uuidString)
                     .eq("user_id", value: userId.uuidString)
                     .execute()
-                
                 favorites.removeAll { $0.quoteId == quote.id }
             } else {
-                // Adicionar favorito
                 let response = try await SupabaseService.client
                     .from("favorites")
                     .insert([
@@ -56,8 +52,7 @@ class FavoriteViewModel: ObservableObject {
                         "quote_id": quote.id.uuidString
                     ])
                     .execute()
-                
-                // Decodifica somente se tiver dados
+
                 if !response.data.isEmpty {
                     let decoder = JSONDecoder()
                     decoder.dateDecodingStrategy = .iso8601
@@ -66,12 +61,10 @@ class FavoriteViewModel: ObservableObject {
                 }
             }
         } catch {
-            print("Erro ao alternar favorito: \(error.localizedDescription)")
+            print("Error toggling favorite: \(error.localizedDescription)")
         }
     }
 
-
-    
     func isFavorite(quoteId: UUID) -> Bool {
         favorites.contains { $0.quoteId == quoteId }
     }

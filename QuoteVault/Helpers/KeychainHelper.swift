@@ -8,15 +8,13 @@
 import Foundation
 import Supabase
 
-
 final class KeychainHelper {
-
     static let shared = KeychainHelper()
     private init() {}
 
     private let sessionKey = "supabase_session"
 
-    // Salva a sessão no Keychain
+    /// Saves the session to Keychain
     func save(session: Session) {
         do {
             let data = try JSONEncoder().encode(session)
@@ -25,15 +23,14 @@ final class KeychainHelper {
                 kSecAttrAccount as String: sessionKey,
                 kSecValueData as String: data
             ]
-            // Remove se já existir
             SecItemDelete(query as CFDictionary)
             SecItemAdd(query as CFDictionary, nil)
         } catch {
-            print("Erro ao salvar sessão no Keychain: \(error)")
+            print("Error saving session to Keychain: \(error)")
         }
     }
 
-    // Carrega a sessão do Keychain
+    /// Loads the session from Keychain
     func loadSession() -> Session? {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
@@ -46,20 +43,17 @@ final class KeychainHelper {
         let status = SecItemCopyMatching(query as CFDictionary, &dataTypeRef)
 
         guard status == errSecSuccess,
-              let data = dataTypeRef as? Data else {
-            return nil
-        }
+              let data = dataTypeRef as? Data else { return nil }
 
         do {
-            let session = try JSONDecoder().decode(Session.self, from: data)
-            return session
+            return try JSONDecoder().decode(Session.self, from: data)
         } catch {
-            print("Erro ao decodificar sessão do Keychain: \(error)")
+            print("Error decoding session from Keychain: \(error)")
             return nil
         }
     }
 
-    // Limpa a sessão do Keychain
+    /// Clears the session from Keychain
     func clearSession() {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
@@ -68,3 +62,4 @@ final class KeychainHelper {
         SecItemDelete(query as CFDictionary)
     }
 }
+

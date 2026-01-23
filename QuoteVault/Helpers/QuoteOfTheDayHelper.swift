@@ -8,11 +8,11 @@
 import Foundation
 
 extension Array where Element == QuoteModel {
+    /// Returns a quote of the day based on the current day
     func randomQuoteOfTheDay() -> Element? {
         guard !self.isEmpty else { return nil }
-        let calendar = Calendar.current
-        let day = calendar.component(.day, from: Date())
-        let index = day % count
-        return self[index]
+        let day = Calendar.current.component(.day, from: Date())
+        return self[day % count]
     }
 }
+

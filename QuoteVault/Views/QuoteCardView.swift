@@ -10,9 +10,9 @@ import SwiftUI
 struct QuoteCardView: View {
     let quote: QuoteModel
     let style: CardStyle
-    
+
     enum CardStyle { case light, dark, colorful }
-    
+
     var body: some View {
         ZStack {
             background
@@ -30,19 +30,24 @@ struct QuoteCardView: View {
         .cornerRadius(12)
         .shadow(radius: 5)
     }
-    
-    var background: Color {
+
+    private var background: Color {
         switch style {
-        case .light: return Color.white
-        case .dark: return Color.black
+        case .light: return .white
+        case .dark: return .black
         case .colorful: return Color.blue.opacity(0.8)
         }
     }
-    
-    var foreground: Color {
+
+    private var foreground: Color {
         switch style {
         case .dark, .colorful: return .white
         default: return .black
         }
     }
 }
+
+#Preview {
+    QuoteCardView(quote: .sampleQuote(), style: .colorful)
+}
+
