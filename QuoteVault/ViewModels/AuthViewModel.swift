@@ -22,6 +22,14 @@ class AuthViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var errorMessage: String?
 
+    init() {
+        // Tenta carregar a sessão do Keychain ao iniciar
+        if let savedSession = KeychainHelper.shared.loadSession() {
+            self.session = savedSession
+            self.isAuthenticated = true
+        }
+    }
+
     func signIn() async {
         guard !email.isEmpty, !password.isEmpty else {
             errorMessage = "Please enter email and password"
@@ -39,6 +47,9 @@ class AuthViewModel: ObservableObject {
 
             self.session = session
             self.isAuthenticated = true
+
+            // Salva a sessão no Keychain
+            KeychainHelper.shared.save(session: session)
 
         } catch {
             self.errorMessage = error.localizedDescription
@@ -62,10 +73,11 @@ class AuthViewModel: ObservableObject {
                 password: password
             )
 
-            // Se a sessão existir, autentica
+            // Se a sessão existir, autentica e salva
             if let session = response.session {
                 self.session = session
                 self.isAuthenticated = true
+                KeychainHelper.shared.save(session: session)
             } else if response.user != nil {
                 // Usuário criado, mas sem sessão
                 self.isAuthenticated = true
@@ -84,6 +96,10 @@ class AuthViewModel: ObservableObject {
             try await SupabaseService.client.auth.signOut()
             self.session = nil
             self.isAuthenticated = false
+
+            // Limpa a sessão do Keychain
+            KeychainHelper.shared.clearSession()
+
         } catch {
             self.errorMessage = error.localizedDescription
         }

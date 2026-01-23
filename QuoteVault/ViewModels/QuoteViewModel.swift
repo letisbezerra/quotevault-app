@@ -25,6 +25,7 @@ class QuoteViewModel: ObservableObject {
     
     let categories = ["Motivation", "Love", "Success", "Wisdom", "Humor"]
     
+    // Fetch Quotes
     func fetchQuotes() async {
         isLoading = true
         errorMessage = nil
@@ -39,6 +40,7 @@ class QuoteViewModel: ObservableObject {
             let decoder = JSONDecoder()
             decoder.dateDecodingStrategy = .iso8601
             quotes = try decoder.decode([QuoteModel].self, from: response.data)
+            
             applyFilters()
             
         } catch {
@@ -48,6 +50,7 @@ class QuoteViewModel: ObservableObject {
         isLoading = false
     }
     
+    // Filters
     private func applyFilters() {
         filteredQuotes = quotes.filter { quote in
             let matchesCategory = selectedCategory == nil || quote.category == selectedCategory
@@ -58,30 +61,57 @@ class QuoteViewModel: ObservableObject {
         }
     }
     
-    func toggleFavorite(quote: QuoteModel) {
-        if let index = quotes.firstIndex(where: { $0.id == quote.id }) {
-            quotes[index].isFavorite.toggle()
-            applyFilters()
-            Task { await saveFavoriteToSupabase(quote: quotes[index]) }
+    // Favorites
+    func toggleFavorite(quote: QuoteModel, userId: UUID) {
+        guard let index = quotes.firstIndex(where: { $0.id == quote.id }) else { return }
+        
+        quotes[index].isFavorite.toggle()
+        applyFilters()
+        
+        Task {
+            await saveFavoriteToSupabase(quote: quotes[index], userId: userId)
         }
     }
-
+    
     func isFavorite(quote: QuoteModel) -> Bool {
         return quotes.first(where: { $0.id == quote.id })?.isFavorite ?? false
     }
-
-    func saveFavoriteToSupabase(quote: QuoteModel) async {
+    
+    func saveFavoriteToSupabase(quote: QuoteModel, userId: UUID) async {
         do {
-            let _ = try await SupabaseService.client
-                .from("quotes")
-                .update(["is_favorite": quote.isFavorite])
-                .eq("id", value: quote.id.uuidString)
+            // Verifica se já existe no Supabase
+            let response = try await SupabaseService.client
+                .from("favorites")
+                .select()
+                .eq("user_id", value: userId.uuidString)
+                .eq("quote_id", value: quote.id.uuidString)
                 .execute()
+            
+            let decoder = JSONDecoder()
+            decoder.dateDecodingStrategy = .iso8601
+            let existingFavs = try decoder.decode([FavoriteModel].self, from: response.data)
+            
+            if existingFavs.isEmpty {
+                // Adiciona favorito
+                try await SupabaseService.client
+                    .from("favorites")
+                    .insert([
+                        "user_id": userId.uuidString,
+                        "quote_id": quote.id.uuidString
+                    ])
+                    .execute()
+            } else {
+                // Remove favorito
+                try await SupabaseService.client
+                    .from("favorites")
+                    .delete()
+                    .eq("user_id", value: userId.uuidString)
+                    .eq("quote_id", value: quote.id.uuidString)
+                    .execute()
+            }
+            
         } catch {
-            print("Erro ao salvar favorito: \(error.localizedDescription)")
+            print("Erro ao alternar favorito: \(error.localizedDescription)")
         }
     }
-
 }
-
-

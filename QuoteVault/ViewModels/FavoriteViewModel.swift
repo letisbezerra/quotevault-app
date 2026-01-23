@@ -45,20 +45,32 @@ class FavoriteViewModel: ObservableObject {
                     .eq("quote_id", value: quote.id.uuidString)
                     .eq("user_id", value: userId.uuidString)
                     .execute()
+                
+                favorites.removeAll { $0.quoteId == quote.id }
             } else {
                 // Adicionar favorito
-                try await SupabaseService.client
+                let response = try await SupabaseService.client
                     .from("favorites")
                     .insert([
                         "user_id": userId.uuidString,
                         "quote_id": quote.id.uuidString
                     ])
                     .execute()
+                
+                // Decodifica somente se tiver dados
+                if !response.data.isEmpty {
+                    let decoder = JSONDecoder()
+                    decoder.dateDecodingStrategy = .iso8601
+                    let newFavs = try decoder.decode([FavoriteModel].self, from: response.data)
+                    favorites.append(contentsOf: newFavs)
+                }
             }
         } catch {
             print("Erro ao alternar favorito: \(error.localizedDescription)")
         }
     }
+
+
     
     func isFavorite(quoteId: UUID) -> Bool {
         favorites.contains { $0.quoteId == quoteId }

@@ -11,6 +11,7 @@ struct LoginView: View {
     @StateObject private var viewModel = AuthViewModel()
     @State private var activeSheet: ActiveSheet? = nil
     @State private var navigateToHome = false
+    @State private var hasCheckedSession = false
 
     enum ActiveSheet: Identifiable {
         case signUp, resetPassword
@@ -102,11 +103,22 @@ struct LoginView: View {
                 }
             }
             .navigationDestination(isPresented: $navigateToHome) {
-                HomeView()
+                MainTabView()
+                    .environmentObject(viewModel)
+            }
+            // CHECK LOGIN AUTOMATICO
+            .task {
+                guard !hasCheckedSession else { return }
+                hasCheckedSession = true
+                if viewModel.isAuthenticated {
+                    navigateToHome = true
+                }
             }
         }
     }
 }
+
+
 
 #Preview {
     LoginView()

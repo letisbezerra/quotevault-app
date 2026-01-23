@@ -23,7 +23,7 @@ struct FavoritesView: View {
                     Text(error)
                         .foregroundColor(.red)
                         .padding()
-                } else if favoriteVM.favorites.isEmpty {
+                } else if filteredFavorites.isEmpty {
                     Text("You have no favorites yet.")
                         .foregroundColor(.secondary)
                         .padding()
@@ -53,8 +53,8 @@ struct FavoritesView: View {
                                 Button {
                                     toggleFavorite(quote: quote)
                                 } label: {
-                                    Image(systemName: "heart.fill")
-                                        .foregroundColor(.red)
+                                    Image(systemName: favoriteVM.isFavorite(quoteId: quote.id) ? "heart.fill" : "heart")
+                                        .foregroundColor(favoriteVM.isFavorite(quoteId: quote.id) ? .red : .gray)
                                 }
                             }
                             .padding(.vertical, 8)
@@ -75,6 +75,7 @@ struct FavoritesView: View {
     
     // MARK: - Computed property
     private var filteredFavorites: [QuoteModel] {
+        // Filtra os quotes que estão na lista de favoritos
         quoteVM.quotes.filter { quote in
             favoriteVM.isFavorite(quoteId: quote.id)
         }
@@ -83,15 +84,15 @@ struct FavoritesView: View {
     // MARK: - Helpers
     private func loadData() async {
         guard let userId = authVM.session?.user.id else { return }
-        await favoriteVM.fetchFavorites(for: userId)
-        await quoteVM.fetchQuotes()
+        await quoteVM.fetchQuotes()                // Carrega todos os quotes primeiro
+        await favoriteVM.fetchFavorites(for: userId) // Depois carrega os favoritos do usuário
     }
     
     private func toggleFavorite(quote: QuoteModel) {
         guard let userId = authVM.session?.user.id else { return }
         Task {
             await favoriteVM.toggleFavorite(quote: quote, userId: userId)
-            await loadData() // Atualiza a lista de favoritos após alteração
+            await favoriteVM.fetchFavorites(for: userId) // Atualiza só a lista de favoritos
         }
     }
 }
