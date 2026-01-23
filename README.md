@@ -101,4 +101,4 @@ Workflow: Plan → AI-assisted code generation → manual refinement → debug �
 
 ## Credits
 - Developed by Letícia Bezerra
-- AI assistance: ChatGPT, GitHub Copilot, Claude Code, Cursor
+- AI assistance: ChatGPT, Copilot, Perplexty 
