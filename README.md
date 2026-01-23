@@ -99,6 +99,26 @@ Workflow: Plan → AI-assisted code generation → manual refinement → debug �
 - ✅ Fully integrated with Supabase backend and RLS
 - ✅ AI workflow documented and leveraged effectively
 
+## 🤖 AI Tools & Workflow
+
+AI tools played a key role in accelerating development, maintaining code quality, and ensuring clean architecture throughout the project.
+
+**Tools Used:**
+- ChatGPT: Architecture planning (MVVM), SwiftUI code snippets, SQL scripts, debugging guidance
+- GitHub Copilot: Autocomplete, boilerplate generation, rapid View/ViewModel implementation
+- Claude Code & Cursor: Debugging assistance, code suggestions, and optimizations
+
+**Workflow Example:**
+1. Plan features and project architecture using ChatGPT
+2. Generate initial SwiftUI code and SQL seed scripts
+3. Implement the generated code in Xcode
+4. Debug and refine code using Claude Code and Cursor
+5. Integrate features and test functionality
+6. Document workflow in README
+
+> This AI-assisted workflow allowed rapid development while keeping the project clean, structured, and maintainable.
+
+
 ## Credits
 - Developed by Letícia Bezerra
 - AI assistance: ChatGPT, Copilot, Perplexty 
