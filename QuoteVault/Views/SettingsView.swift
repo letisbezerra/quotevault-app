@@ -19,45 +19,49 @@ struct SettingsView: View {
                     Toggle(isOn: $settingsVM.isDarkMode) {
                         Text("Dark Mode")
                     }
-                    .onChange(of: settingsVM.isDarkMode) { _, newValue in
-                        settingsVM.toggleDarkMode()
-                    }
                 }
 
                 Section(header: Text("Font")) {
-                    HStack {
+                    HStack(spacing: 12) {
                         Text("Font Size")
-                        Spacer()
+                            .frame(width: 80, alignment: .leading)
+                        
                         Button(action: {
                             settingsVM.decreaseFontSize()
                         }) {
-                            Image(systemName: "minus.circle")
+                            Image(systemName: "minus.circle.fill")
                                 .font(.title2)
+                                .foregroundColor(.red)
+                                .frame(width: 44, height: 44)
                         }
+                        .buttonStyle(PlainButtonStyle())  // ✅ FIX PRINCIPAL
+                        
                         Text("\(Int(settingsVM.fontSize)) pt")
-                            .frame(width: 50)
-                            .font(.body.monospaced())
+                            .frame(width: 60)
+                            .monospaced()
+                            .font(.title3)
+                            .fontWeight(.medium)
+                        
                         Button(action: {
                             settingsVM.increaseFontSize()
                         }) {
-                            Image(systemName: "plus.circle")
+                            Image(systemName: "plus.circle.fill")
                                 .font(.title2)
+                                .foregroundColor(.blue)
+                                .frame(width: 44, height: 44)
                         }
+                        .buttonStyle(PlainButtonStyle())  // ✅ FIX PRINCIPAL
                     }
+                    .contentShape(Rectangle())  // ✅ GARANTE toque
                 }
+
 
                 Section {
                     Button(action: {
-                        settingsVM.saveSettings()
                         withAnimation(.easeInOut(duration: 0.2)) {
                             isPressed = true
                         }
                         dismiss()
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                            withAnimation(.easeInOut(duration: 0.2)) {
-                                isPressed = false
-                            }
-                        }
                     }) {
                         Text("Save Changes")
                             .foregroundColor(.white)
@@ -89,4 +93,3 @@ struct SettingsView: View {
     SettingsView()
         .environmentObject(SettingsViewModel())
 }
-

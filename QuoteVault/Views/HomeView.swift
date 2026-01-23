@@ -25,13 +25,13 @@ struct HomeView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                // Barra de busca
+                // Search bar
                 TextField("Search by text or author", text: $viewModel.searchText)
                     .font(customBodyFont)
                     .textFieldStyle(.roundedBorder)
                     .padding(.horizontal)
                 
-                // Filtros por categoria
+                // Category filters
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 8) {
                         Button("All") {
@@ -59,7 +59,7 @@ struct HomeView: View {
                 
                 Divider()
                 
-                // Conteúdo
+                // Content
                 if viewModel.isLoading {
                     ProgressView("Loading Quotes...")
                         .font(customBodyFont)
@@ -80,9 +80,12 @@ struct HomeView: View {
                             HStack(alignment: .top) {
                                 VStack(alignment: .leading, spacing: 4) {
                                     Text("\"\(quote.text)\"")
-                                        .font(.system(size: settingsVM.fontSize))  
+                                        .font(customBodyFont)
+                                    
+                                    HStack {
                                         Text(quote.author ?? "Unknown")
-                                        
+                                            .font(customCaptionFont)
+                                            .foregroundColor(.secondary)
                                         Spacer()
                                         Text(quote.category)
                                             .font(customCaptionFont)
@@ -95,7 +98,7 @@ struct HomeView: View {
                                 
                                 Spacer()
                                 
-                                // Botão favorito
+                                // Favorite button
                                 Button {
                                     if let userId = authVM.session?.user.id {
                                         viewModel.toggleFavorite(quote: quote, userId: userId)
@@ -105,7 +108,7 @@ struct HomeView: View {
                                         .foregroundColor(viewModel.isFavorite(quote: quote) ? .red : .gray)
                                 }
                                 
-                                // Botão compartilhar
+                                // Share button
                                 Button {
                                     shareQuote(quote)
                                 } label: {
@@ -123,7 +126,6 @@ struct HomeView: View {
                 }
             }
             .navigationTitle("Quotes")
-            .font(customBodyFont)
             .task {
                 await viewModel.fetchQuotes()
             }
@@ -151,4 +153,3 @@ struct HomeView: View {
         .environmentObject(AuthViewModel())
         .environmentObject(SettingsViewModel())
 }
-
