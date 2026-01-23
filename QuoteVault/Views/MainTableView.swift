@@ -1,5 +1,5 @@
 //
-//  MainTableView.swift
+//  MainTabView.swift
 //  QuoteVault
 //
 //  Created by Leticia Bezerra on 22/01/26.
@@ -9,66 +9,66 @@ import SwiftUI
 
 struct MainTabView: View {
     @EnvironmentObject var authVM: AuthViewModel
-    @EnvironmentObject var settingsVM: SettingsViewModel
+    @StateObject private var settingsVM = SettingsViewModel()  // ✅ ADICIONADO
     @StateObject private var quoteVM = QuoteViewModel()
     @State private var showSettings = false
 
     var body: some View {
-        NavigationStack {
-            TabView {
-                HomeView()
-                    .tabItem {
-                        Image(systemName: "quote.bubble")
-                        Text("Quotes")
-                    }
+        TabView {
+            HomeView()
+                .tabItem {
+                    Image(systemName: "quote.bubble")
+                    Text("Quotes")
+                }
+                .environmentObject(settingsVM)  // ✅ PASSAR
 
-                FavoritesView()
-                    .tabItem {
-                        Image(systemName: "heart.fill")
-                        Text("Favorites")
-                    }
+            FavoritesView()
+                .tabItem {
+                    Image(systemName: "heart.fill")
+                    Text("Favorites")
+                }
+                .environmentObject(settingsVM)
 
-                QuoteOfTheDayTab(quoteVM: quoteVM)
-            }
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        showSettings.toggle()
-                    } label: {
-                        Image(systemName: "gearshape")
-                    }
+            // ✅ SEU CÓDIGO ORIGINAL (simplificado)
+            Group {
+                if quoteVM.isLoading {
+                    ProgressView("Loading...")
+                } else if let dailyQuote = quoteVM.quotes.randomQuoteOfTheDay() {
+                    QuoteOfTheDayView(quote: dailyQuote)
+                        .environmentObject(settingsVM)
+                } else {
+                    Text("No quotes available.")
+                        .foregroundColor(.secondary)
                 }
             }
-//            .sheet(isPresented: $showSettings) {
-//                SettingsView()
-//                    .environmentObject(settingsVM)
-//            }
-            .task {
-                await quoteVM.fetchQuotes()
+            .tabItem {
+                Image(systemName: "star.fill")
+                Text("Quote of the Day")
             }
+        }
+        .sheet(isPresented: $showSettings) {
+            SettingsView()
+                .environmentObject(settingsVM)
+        }
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button {
+                    showSettings.toggle()
+                } label: {
+                    Image(systemName: "gearshape")
+                }
+            }
+        }
+        .preferredColorScheme(settingsVM.isDarkMode ? .dark : .light)
+        .task {
+            await quoteVM.fetchQuotes()
         }
     }
 }
 
-// Extra Tab simplificado
-struct QuoteOfTheDayTab: View {
-    @ObservedObject var quoteVM: QuoteViewModel
-    
-    var body: some View {
-        Group {
-            if quoteVM.isLoading {
-                ProgressView("Loading Quote of the Day...")
-            } else if let dailyQuote = quoteVM.quotes.randomQuoteOfTheDay() {
-                QuoteOfTheDayView(quote: dailyQuote)
-            } else {
-                Text("No quotes available for today.")
-                    .foregroundColor(.secondary)
-                    .padding()
-            }
-        }
-        .tabItem {
-            Image(systemName: "star.fill")
-            Text("Quote of the Day")
-        }
-    }
+
+#Preview {
+    MainTabView()
+        .environmentObject(AuthViewModel())
+        .environmentObject(SettingsViewModel())
 }

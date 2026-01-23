@@ -12,30 +12,46 @@ import UIKit
 struct HomeView: View {
     @StateObject private var viewModel = QuoteViewModel()
     @EnvironmentObject private var authVM: AuthViewModel
+    @EnvironmentObject private var settingsVM: SettingsViewModel
     
+    private var customBodyFont: Font {
+        .system(size: settingsVM.fontSize, design: .default)
+    }
+    
+    private var customCaptionFont: Font {
+        .system(size: settingsVM.fontSize * 0.7, design: .default)
+    }
+
     var body: some View {
         NavigationStack {
             VStack {
                 // Barra de busca
                 TextField("Search by text or author", text: $viewModel.searchText)
+                    .font(customBodyFont)
                     .textFieldStyle(.roundedBorder)
                     .padding(.horizontal)
                 
                 // Filtros por categoria
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 8) {
-                        Button("All") { viewModel.selectedCategory = nil }
-                            .padding(8)
-                            .background(viewModel.selectedCategory == nil ? Color.blue : Color.gray.opacity(0.2))
-                            .foregroundColor(viewModel.selectedCategory == nil ? .white : .primary)
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                        Button("All") {
+                            viewModel.selectedCategory = nil
+                        }
+                        .padding(8)
+                        .background(viewModel.selectedCategory == nil ? Color.blue : Color.gray.opacity(0.2))
+                        .foregroundColor(viewModel.selectedCategory == nil ? .white : .primary)
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        .font(customCaptionFont)
                         
                         ForEach(viewModel.categories, id: \.self) { category in
-                            Button(category) { viewModel.selectedCategory = category }
-                                .padding(8)
-                                .background(viewModel.selectedCategory == category ? Color.blue : Color.gray.opacity(0.2))
-                                .foregroundColor(viewModel.selectedCategory == category ? .white : .primary)
-                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                            Button(category) {
+                                viewModel.selectedCategory = category
+                            }
+                            .padding(8)
+                            .background(viewModel.selectedCategory == category ? Color.blue : Color.gray.opacity(0.2))
+                            .foregroundColor(viewModel.selectedCategory == category ? .white : .primary)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                            .font(customCaptionFont)
                         }
                     }
                     .padding(.horizontal)
@@ -46,13 +62,16 @@ struct HomeView: View {
                 // Conteúdo
                 if viewModel.isLoading {
                     ProgressView("Loading Quotes...")
+                        .font(customBodyFont)
                         .padding()
                 } else if let error = viewModel.errorMessage {
                     Text(error)
+                        .font(customBodyFont)
                         .foregroundColor(.red)
                         .padding()
                 } else if viewModel.filteredQuotes.isEmpty {
                     Text("No quotes found.")
+                        .font(customBodyFont)
                         .foregroundColor(.secondary)
                         .padding()
                 } else {
@@ -60,15 +79,13 @@ struct HomeView: View {
                         ForEach(viewModel.filteredQuotes, id: \.id) { quote in
                             HStack(alignment: .top) {
                                 VStack(alignment: .leading, spacing: 4) {
-                                    Text("“\(quote.text)”")
-                                        .font(.body)
-                                    HStack {
+                                    Text("\"\(quote.text)\"")
+                                        .font(.system(size: settingsVM.fontSize))  
                                         Text(quote.author ?? "Unknown")
-                                            .font(.caption)
-                                            .foregroundColor(.secondary)
+                                        
                                         Spacer()
                                         Text(quote.category)
-                                            .font(.caption2)
+                                            .font(customCaptionFont)
                                             .foregroundColor(.blue)
                                             .padding(4)
                                             .background(.gray.opacity(0.2))
@@ -106,6 +123,7 @@ struct HomeView: View {
                 }
             }
             .navigationTitle("Quotes")
+            .font(customBodyFont)
             .task {
                 await viewModel.fetchQuotes()
             }
@@ -131,5 +149,6 @@ struct HomeView: View {
 #Preview {
     HomeView()
         .environmentObject(AuthViewModel())
+        .environmentObject(SettingsViewModel())
 }
 

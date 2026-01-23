@@ -19,25 +19,36 @@ struct SettingsView: View {
                     Toggle(isOn: $settingsVM.isDarkMode) {
                         Text("Dark Mode")
                     }
+                    .onChange(of: settingsVM.isDarkMode) { _, newValue in
+                        settingsVM.toggleDarkMode()
+                    }
                 }
 
                 Section(header: Text("Font")) {
                     HStack {
                         Text("Font Size")
                         Spacer()
-                        Button(action: { settingsVM.decreaseFontSize() }) {
+                        Button(action: {
+                            settingsVM.decreaseFontSize()
+                        }) {
                             Image(systemName: "minus.circle")
+                                .font(.title2)
                         }
                         Text("\(Int(settingsVM.fontSize)) pt")
                             .frame(width: 50)
-                        Button(action: { settingsVM.increaseFontSize() }) {
+                            .font(.body.monospaced())
+                        Button(action: {
+                            settingsVM.increaseFontSize()
+                        }) {
                             Image(systemName: "plus.circle")
+                                .font(.title2)
                         }
                     }
                 }
 
                 Section {
                     Button(action: {
+                        settingsVM.saveSettings()
                         withAnimation(.easeInOut(duration: 0.2)) {
                             isPressed = true
                         }
@@ -60,12 +71,14 @@ struct SettingsView: View {
                     .listRowBackground(Color.clear)
                 }
             }
-            // Centraliza título com fonte maior
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     Text("Settings")
                         .font(.largeTitle)
                         .bold()
+                }
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Cancel") { dismiss() }
                 }
             }
         }
@@ -76,3 +89,4 @@ struct SettingsView: View {
     SettingsView()
         .environmentObject(SettingsViewModel())
 }
+
