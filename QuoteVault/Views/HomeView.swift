@@ -12,7 +12,7 @@ import UIKit
 struct HomeView: View {
     @StateObject private var viewModel = QuoteViewModel()
     @EnvironmentObject private var authVM: AuthViewModel
-
+    
     var body: some View {
         NavigationStack {
             VStack {
@@ -112,6 +112,20 @@ struct HomeView: View {
         }
     }
     
+    func shareQuote(_ quote: QuoteModel) {
+        let lightImage = QuoteCardView(quote: quote, style: .light).snapshot()
+        let darkImage = QuoteCardView(quote: quote, style: .dark).snapshot()
+        let colorfulImage = QuoteCardView(quote: quote, style: .colorful).snapshot()
+        
+        let items: [Any] = [lightImage, darkImage, colorfulImage]
+        
+        let activityVC = UIActivityViewController(activityItems: items, applicationActivities: nil)
+        
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let rootVC = windowScene.windows.first?.rootViewController {
+            rootVC.present(activityVC, animated: true)
+        }
+    }
 }
 
 #Preview {
