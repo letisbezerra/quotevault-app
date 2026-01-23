@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Auth
+import UIKit
 
 struct HomeView: View {
     @StateObject private var viewModel = QuoteViewModel()
@@ -77,15 +78,22 @@ struct HomeView: View {
                                 
                                 Spacer()
                                 
+                                // Botão favorito
                                 Button {
                                     if let userId = authVM.session?.user.id {
                                         viewModel.toggleFavorite(quote: quote, userId: userId)
-                                    } else {
-                                        print("Usuário não logado!")
                                     }
                                 } label: {
                                     Image(systemName: viewModel.isFavorite(quote: quote) ? "heart.fill" : "heart")
                                         .foregroundColor(viewModel.isFavorite(quote: quote) ? .red : .gray)
+                                }
+                                
+                                // Botão compartilhar
+                                Button {
+                                    shareQuote(quote)
+                                } label: {
+                                    Image(systemName: "square.and.arrow.up")
+                                        .foregroundColor(.blue)
                                 }
                             }
                             .padding(.vertical, 8)
@@ -103,9 +111,11 @@ struct HomeView: View {
             }
         }
     }
+    
 }
 
 #Preview {
     HomeView()
-        .environmentObject(AuthViewModel()) // Certifica que AuthVM está disponível
+        .environmentObject(AuthViewModel())
 }
+
