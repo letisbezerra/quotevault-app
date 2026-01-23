@@ -1,4 +1,4 @@
-cat <<EOF > Documentation.md
+Documentation.md
 # 📘 QuoteVault — Complete Progress & AI Workflow Documentation (Updated)
 
 ## Overview
@@ -180,5 +180,3 @@ extension Array where Element == QuoteModel {
 - Quote sharing implemented via ShareSheet ✅  
 - Quote of the Day tab functional ✅  
 - AI workflow documented
-
-EOF
